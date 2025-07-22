@@ -1,0 +1,30 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "SteamInputSimplePlugin",
+	"Description": "Steam Input simple blueprint bindings",
+	"Category": "Other",
+	"CreatedBy": "Vasilis Nicolaou",
+	"CreatedByURL": "https://vaslabs.io",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "",
+	"CanContainContent": true,
+	"IsBetaVersion": true,
+	"IsExperimentalVersion": false,
+	"Installed": false,
+	"Modules": [
+		{
+			"Name": "SteamInputSimplePlugin",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "SteamShared",
+			"Enabled": true
+		}
+	]
+}
