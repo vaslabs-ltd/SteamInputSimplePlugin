@@ -6,8 +6,7 @@ set plugin_dir=%~dp0Plugins\%PLUGINNAME%
 
 rmdir %package_dir% /s /q
 
-call "%RUNUAT%" BuildPlugin -Plugin="%plugin_dir%\%PLUGINNAME%.uplugin"\
- -Package=%package_dir% -Rocket -TargetPlatforms=Win64
+call "%RUNUAT%" BuildPlugin -Plugin="%plugin_dir%\%PLUGINNAME%.uplugin" -Package=%package_dir% -Rocket -TargetPlatforms=Win64
 
 rem rmdir %plugin_dir%\Binaries /s /q
 rem rmdir %plugin_dir%\Intermediate /s /q
