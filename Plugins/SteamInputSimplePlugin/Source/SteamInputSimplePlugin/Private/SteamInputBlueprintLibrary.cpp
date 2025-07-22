@@ -19,9 +19,7 @@ TArray<FSteamControllerInfo> USteamInputBlueprintLibrary::GetConnectedController
             
             if (SteamInputAPI)
             {
-                SteamInputAPI->Init(true);
                 SteamInputAPI->RunFrame();
-
 
                 InputHandle_t Handles[STEAM_INPUT_MAX_COUNT];
                 int Count = SteamInputAPI->GetConnectedControllers(Handles);
