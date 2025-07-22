@@ -5,6 +5,20 @@
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "SteamInputBlueprintLibrary.generated.h"
 
+
+UENUM(BlueprintType)
+enum class ESteamControllerType : uint8
+{
+	Unknown UMETA(DisplayName = "Unknown"),
+	SteamController UMETA(DisplayName = "Steam Controller"),
+	Xbox360 UMETA(DisplayName = "Xbox 360 Controller"),
+	XboxOne UMETA(DisplayName = "Xbox One Controller"),
+	GenericGamepad UMETA(DisplayName = "Generic Gamepad"),
+	PS4 UMETA(DisplayName = "PS4 Controller"),
+	PS5 UMETA(DisplayName = "PS5 Controller"),
+	SwitchPro UMETA(DisplayName = "Switch Pro Controller")
+};
+
 USTRUCT(BlueprintType)
 struct FSteamControllerInfo
 {
@@ -14,8 +28,9 @@ struct FSteamControllerInfo
 	int32 ControllerHandle;
 
 	UPROPERTY(BlueprintReadOnly)
-	FString ControllerName;
+	ESteamControllerType ControllerType;
 };
+
 
 UCLASS()
 class STEAMINPUTSIMPLEPLUGIN_API USteamInputBlueprintLibrary : public UBlueprintFunctionLibrary
@@ -30,4 +45,5 @@ public:
 	// Returns the glyph for a given action and controller
 	UFUNCTION(BlueprintCallable, Category = "Steam Input")
 	static FString GetGlyphForAction(int32 ControllerHandle, FString ActionName);
+
 };

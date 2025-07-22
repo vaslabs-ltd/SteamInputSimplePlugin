@@ -9,49 +9,51 @@
 
 TArray<FSteamControllerInfo> USteamInputBlueprintLibrary::GetConnectedControllers()
 {
-TArray<FSteamControllerInfo> Controllers;
-if (FSteamSharedModule::IsAvailable())
-{
-	TSharedPtr<FSteamClientInstanceHandler> SteamClientHandler = FSteamSharedModule::Get().ObtainSteamClientInstanceHandle();
-	if (SteamClientHandler.IsValid() && SteamClientHandler->IsInitialized())
-	{
-		ISteamInput* SteamInputAPI = SteamInput();
-		if (SteamInputAPI)
-		{
-			SteamInputAPI->RunFrame();
+    TArray<FSteamControllerInfo> Controllers;
+    if (FSteamSharedModule::IsAvailable())
+    {
+        TSharedPtr<FSteamClientInstanceHandler> SteamClientHandler = FSteamSharedModule::Get().ObtainSteamClientInstanceHandle();
+        if (SteamClientHandler.IsValid() && SteamClientHandler->IsInitialized())
+        {
+            ISteamInput* SteamInputAPI = SteamInput();
+            
+            if (SteamInputAPI)
+            {
+                SteamInputAPI->Init(true);
+                SteamInputAPI->RunFrame();
 
-			InputHandle_t Handles[STEAM_INPUT_MAX_COUNT];
-			int Count = SteamInputAPI->GetConnectedControllers(Handles);
 
-			for (int i = 0; i < Count; ++i)
-			{
-				FSteamControllerInfo Info;
-				Info.ControllerHandle = (int32)Handles[i];
+                InputHandle_t Handles[STEAM_INPUT_MAX_COUNT];
+                int Count = SteamInputAPI->GetConnectedControllers(Handles);
 
-				ESteamInputType Type = SteamInputAPI->GetInputTypeForHandle(Handles[i]);
-				FString TypeName;
-				switch (Type)
-				{
-					case k_ESteamInputType_SteamController: TypeName = TEXT("Steam Controller"); break;
-					case k_ESteamInputType_XBox360Controller: TypeName = TEXT("Xbox 360 Controller"); break;
-					case k_ESteamInputType_XBoxOneController: TypeName = TEXT("Xbox One Controller"); break;
-					case k_ESteamInputType_GenericGamepad: TypeName = TEXT("Generic Gamepad"); break;
-					case k_ESteamInputType_PS4Controller: TypeName = TEXT("PS4 Controller"); break;
-					case k_ESteamInputType_PS5Controller: TypeName = TEXT("PS5 Controller"); break;
-					case k_ESteamInputType_SwitchProController: TypeName = TEXT("Switch Pro Controller"); break;
-					case k_ESteamInputType_Unknown: default: TypeName = TEXT("Unknown Controller"); break;
-				}
-				Info.ControllerName = TypeName;
-				Controllers.Add(Info);
-			}
-		}
-	}
+                for (int i = 0; i < Count; ++i)
+                {
+                    FSteamControllerInfo Info;
+                    Info.ControllerHandle = (int32)Handles[i];
+
+                    ESteamInputType Type = SteamInputAPI->GetInputTypeForHandle(Handles[i]);
+                    switch (Type)
+                    {
+                        case k_ESteamInputType_SteamController: Info.ControllerType = ESteamControllerType::SteamController; break;
+                        case k_ESteamInputType_XBox360Controller: Info.ControllerType = ESteamControllerType::Xbox360; break;
+                        case k_ESteamInputType_XBoxOneController: Info.ControllerType = ESteamControllerType::XboxOne; break;
+                        case k_ESteamInputType_GenericGamepad: Info.ControllerType = ESteamControllerType::GenericGamepad; break;
+                        case k_ESteamInputType_PS4Controller: Info.ControllerType = ESteamControllerType::PS4; break;
+                        case k_ESteamInputType_PS5Controller: Info.ControllerType = ESteamControllerType::PS5; break;
+                        case k_ESteamInputType_SwitchProController: Info.ControllerType = ESteamControllerType::SwitchPro; break;
+                        case k_ESteamInputType_Unknown: default: Info.ControllerType = ESteamControllerType::Unknown; break;
+                    }
+                    Controllers.Add(Info);
+                }
+            }
+        }
+    }
+    return Controllers;
 }
-return Controllers;
-}
+
 
 FString USteamInputBlueprintLibrary::GetGlyphForAction(int32 ControllerHandle, FString ActionName)
 {
-	// TODO: Implement Steam Input API integration
-	return FString();
+    // TODO: Implement Steam Input API integration
+    return FString();
 }
