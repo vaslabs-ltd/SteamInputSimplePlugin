@@ -24,10 +24,10 @@ struct FSteamControllerInfo
 {
 	GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "Steam Controller Info")
 	int32 ControllerHandle;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadOnly, Category = "Steam Controller Info")
 	ESteamControllerType ControllerType;
 };
 
