@@ -50,5 +50,8 @@ public class SteamInputSimplePlugin : ModuleRules
 				// ... add any modules that your module loads dynamically here ...
 			}
 			);
+
+		// Ensure Steamworks SDK headers and libraries are available
+		AddEngineThirdPartyPrivateStaticDependencies(Target, "Steamworks");
 	}
 }
