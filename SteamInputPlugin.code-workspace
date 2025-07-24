@@ -18,6 +18,9 @@
 			"DOTNET_HOST_PATH": "/home/vnicolaou/UnrealEngine-5.6/UnrealEngine/Engine/Binaries/ThirdParty/DotNet/8.0.300/linux-x64/dotnet",
 			"DOTNET_MULTILEVEL_LOOKUP": "0",
 			"DOTNET_ROLL_FORWARD": "LatestMajor"
+		},
+		"files.associations": {
+			"*.inc": "cpp"
 		}
 	},
 	"extensions": {

@@ -2,9 +2,10 @@
 
 #pragma once
 
+#include "CoreMinimal.h"
+
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "SteamInputBlueprintLibrary.generated.h"
-
 
 UENUM(BlueprintType)
 enum class ESteamControllerType : uint8
@@ -41,9 +42,4 @@ public:
 	// Returns a list of connected Steam controllers
 	UFUNCTION(BlueprintCallable, Category = "Steam Input")
 	static TArray<FSteamControllerInfo> GetConnectedControllers();
-
-	// Returns the glyph for a given action and controller
-	UFUNCTION(BlueprintCallable, Category = "Steam Input")
-	static FString GetGlyphForAction(int32 ControllerHandle, FString ActionName);
-
 };

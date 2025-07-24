@@ -1,14 +1,19 @@
 
 // Copyright Epic Games, Inc. All Rights Reserved.
-
-
 #include "SteamInputBlueprintLibrary.h"
+
+#include "CoreMinimal.h"
+
 #include "SteamSharedModule.h"
 #include "steam/steam_api.h"
 #include "steam/isteaminput.h"
 
+DEFINE_LOG_CATEGORY_STATIC(LogSteamInputSimplePlugin, Log, All);
+
 TArray<FSteamControllerInfo> USteamInputBlueprintLibrary::GetConnectedControllers()
 {
+    UE_LOG(LogSteamInputSimplePlugin, Warning, TEXT("Steam Input API is initialized."));
+
     TArray<FSteamControllerInfo> Controllers;
     if (FSteamSharedModule::IsAvailable())
     {
@@ -16,13 +21,16 @@ TArray<FSteamControllerInfo> USteamInputBlueprintLibrary::GetConnectedController
         if (SteamClientHandler.IsValid() && SteamClientHandler->IsInitialized())
         {
             ISteamInput* SteamInputAPI = SteamInput();
-            
+
             if (SteamInputAPI)
             {
+                SteamInputAPI->Init(true);
                 SteamInputAPI->RunFrame();
 
                 InputHandle_t Handles[STEAM_INPUT_MAX_COUNT];
                 int Count = SteamInputAPI->GetConnectedControllers(Handles);
+
+                Controllers.Reserve(Count);
 
                 for (int i = 0; i < Count; ++i)
                 {
@@ -44,14 +52,13 @@ TArray<FSteamControllerInfo> USteamInputBlueprintLibrary::GetConnectedController
                     Controllers.Add(Info);
                 }
             }
+        } else {
+            // Print out an error message if Steam Input API is not available
+            UE_LOG(LogSteamInputSimplePlugin, Warning, TEXT("Steam Input API is not available or Steam Client is not initialized."));
         }
+    } else {
+        // Print out an error message if Steam Shared Module is not available
+        UE_LOG(LogSteamInputSimplePlugin, Warning, TEXT("Steam Shared Module is not available."));
     }
     return Controllers;
-}
-
-
-FString USteamInputBlueprintLibrary::GetGlyphForAction(int32 ControllerHandle, FString ActionName)
-{
-    // TODO: Implement Steam Input API integration
-    return FString();
 }
