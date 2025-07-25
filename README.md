@@ -19,7 +19,7 @@ call for Unreal Engine.
 
 <img width="332" height="139" alt="image" src="https://github.com/user-attachments/assets/189ad1c3-6f17-4288-9558-b175d4ef22b6" />
 
-- Please a steam_appid.txt file in the start in workspace
+- Place a steam_appid.txt file in the start in workspace
 - if you are not sure the current working directory is working properly, when you open unreal, open the python repl and do
 ```python
 import os
