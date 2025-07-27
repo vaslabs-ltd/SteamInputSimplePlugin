@@ -60,3 +60,35 @@ TArray<FSteamControllerInfo> USteamInputSimpleBlueprintLibrary::GetConnectedCont
     }
     return Controllers;
 }
+
+
+USteamInputEventManager* USteamInputSimpleBlueprintLibrary::EnableSteamDeviceCallbacks()
+{
+    USteamInputEventManager* EventManager = NewObject<USteamInputEventManager>();
+
+    if (FSteamSharedModule::IsAvailable())
+    {
+        TSharedPtr<FSteamClientInstanceHandler> SteamClientHandler = FSteamSharedModule::Get().ObtainSteamClientInstanceHandle();
+        if (SteamClientHandler.IsValid() && SteamClientHandler->IsInitialized())
+        {
+            ISteamInput* SteamInputAPI = SteamInput();
+            if (SteamInputAPI)
+            {
+                SteamInputAPI->EnableDeviceCallbacks();
+                EventManager->DeviceConnectedCallback.Register(EventManager, &USteamInputEventManager::OnSteamDeviceConnected);
+                EventManager->DeviceDisconnectedCallback.Register(EventManager, &USteamInputEventManager::OnSteamDeviceDisconnected);
+            }
+        }
+    }
+    return EventManager;
+}
+
+void USteamInputEventManager::OnSteamDeviceConnected(SteamInputDeviceConnected_t* pParam)
+{
+    OnSteamControllerConnected.Broadcast((int32)pParam->m_ulConnectedDeviceHandle);
+}
+
+void USteamInputEventManager::OnSteamDeviceDisconnected(SteamInputDeviceDisconnected_t* pParam)
+{
+    OnSteamControllerDisconnected.Broadcast((int32)pParam->m_ulDisconnectedDeviceHandle);
+}
