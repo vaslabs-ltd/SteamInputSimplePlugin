@@ -33,7 +33,6 @@ TArray<FSteamControllerInfo> USteamInputSimpleBlueprintLibrary::GetConnectedCont
                 for (int i = 0; i < Count; ++i)
                 {
                     FSteamControllerInfo Info;
-                    Info.ControllerHandle = (int32)Handles[i];
 
                     ESteamInputType Type = SteamInputAPI->GetInputTypeForHandle(Handles[i]);
                     switch (Type)
@@ -60,36 +59,4 @@ TArray<FSteamControllerInfo> USteamInputSimpleBlueprintLibrary::GetConnectedCont
         UE_LOG(LogSteamInputSimplePlugin, Warning, TEXT("Steam Shared Module is not available."));
     }
     return Controllers;
-}
-
-
-USteamInputEventManager* USteamInputSimpleBlueprintLibrary::EnableSteamDeviceCallbacks()
-{
-    USteamInputEventManager* EventManager = NewObject<USteamInputEventManager>();
-
-    if (FSteamSharedModule::IsAvailable())
-    {
-        TSharedPtr<FSteamClientInstanceHandler> SteamClientHandler = FSteamSharedModule::Get().ObtainSteamClientInstanceHandle();
-        if (SteamClientHandler.IsValid() && SteamClientHandler->IsInitialized())
-        {
-            ISteamInput* SteamInputAPI = SteamInput();
-            if (SteamInputAPI)
-            {
-                SteamInputAPI->EnableDeviceCallbacks();
-                EventManager->DeviceConnectedCallback.Register(EventManager, &USteamInputEventManager::OnSteamDeviceConnected);
-                EventManager->DeviceDisconnectedCallback.Register(EventManager, &USteamInputEventManager::OnSteamDeviceDisconnected);
-            }
-        }
-    }
-    return EventManager;
-}
-
-void USteamInputEventManager::OnSteamDeviceConnected(SteamInputDeviceConnected_t* pParam)
-{
-    OnSteamControllerConnected.Broadcast((int32)pParam->m_ulConnectedDeviceHandle);
-}
-
-void USteamInputEventManager::OnSteamDeviceDisconnected(SteamInputDeviceDisconnected_t* pParam)
-{
-    OnSteamControllerDisconnected.Broadcast((int32)pParam->m_ulDisconnectedDeviceHandle);
 }
