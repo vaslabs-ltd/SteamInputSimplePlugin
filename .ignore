@@ -1,7 +1,8 @@
 /Content
 /Saved
-/Intermediate
 /.vscode
 /DerivedDataCache
+/.git
+/Intermediate
 /Plugins/SteamInputSimplePlugin/Content
 /Plugins/SteamInputSimplePlugin/Intermediate

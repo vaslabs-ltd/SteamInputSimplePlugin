@@ -1,23 +1,22 @@
 
 // Copyright Epic Games, Inc. All Rights Reserved.
-#include "SteamInputBlueprintLibrary.h"
 
-#include "CoreMinimal.h"
-
+#include "SteamInputSimpleBlueprintLibrary.h"
 #include "SteamSharedModule.h"
 #include "steam/steam_api.h"
 #include "steam/isteaminput.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogSteamInputSimplePlugin, Log, All);
 
-TArray<FSteamControllerInfo> USteamInputBlueprintLibrary::GetConnectedControllers()
+TArray<FSteamControllerInfo> USteamInputSimpleBlueprintLibrary::GetConnectedControllers()
 {
     UE_LOG(LogSteamInputSimplePlugin, Warning, TEXT("Steam Input API is initialized."));
 
     TArray<FSteamControllerInfo> Controllers;
     if (FSteamSharedModule::IsAvailable())
     {
-        TSharedPtr<FSteamClientInstanceHandler> SteamClientHandler = FSteamSharedModule::Get().ObtainSteamClientInstanceHandle();
+        TSharedPtr<FSteamClientInstanceHandler> SteamClientHandler = 
+            FSteamSharedModule::Get().ObtainSteamClientInstanceHandle();
         if (SteamClientHandler.IsValid() && SteamClientHandler->IsInitialized())
         {
             ISteamInput* SteamInputAPI = SteamInput();
@@ -29,7 +28,6 @@ TArray<FSteamControllerInfo> USteamInputBlueprintLibrary::GetConnectedController
 
                 InputHandle_t Handles[STEAM_INPUT_MAX_COUNT];
                 int Count = SteamInputAPI->GetConnectedControllers(Handles);
-
                 Controllers.Reserve(Count);
 
                 for (int i = 0; i < Count; ++i)
@@ -51,6 +49,7 @@ TArray<FSteamControllerInfo> USteamInputBlueprintLibrary::GetConnectedController
                     }
                     Controllers.Add(Info);
                 }
+                SteamInputAPI->Shutdown();
             }
         } else {
             // Print out an error message if Steam Input API is not available
@@ -61,4 +60,36 @@ TArray<FSteamControllerInfo> USteamInputBlueprintLibrary::GetConnectedController
         UE_LOG(LogSteamInputSimplePlugin, Warning, TEXT("Steam Shared Module is not available."));
     }
     return Controllers;
+}
+
+
+USteamInputEventManager* USteamInputSimpleBlueprintLibrary::EnableSteamDeviceCallbacks()
+{
+    USteamInputEventManager* EventManager = NewObject<USteamInputEventManager>();
+
+    if (FSteamSharedModule::IsAvailable())
+    {
+        TSharedPtr<FSteamClientInstanceHandler> SteamClientHandler = FSteamSharedModule::Get().ObtainSteamClientInstanceHandle();
+        if (SteamClientHandler.IsValid() && SteamClientHandler->IsInitialized())
+        {
+            ISteamInput* SteamInputAPI = SteamInput();
+            if (SteamInputAPI)
+            {
+                SteamInputAPI->EnableDeviceCallbacks();
+                EventManager->DeviceConnectedCallback.Register(EventManager, &USteamInputEventManager::OnSteamDeviceConnected);
+                EventManager->DeviceDisconnectedCallback.Register(EventManager, &USteamInputEventManager::OnSteamDeviceDisconnected);
+            }
+        }
+    }
+    return EventManager;
+}
+
+void USteamInputEventManager::OnSteamDeviceConnected(SteamInputDeviceConnected_t* pParam)
+{
+    OnSteamControllerConnected.Broadcast((int32)pParam->m_ulConnectedDeviceHandle);
+}
+
+void USteamInputEventManager::OnSteamDeviceDisconnected(SteamInputDeviceDisconnected_t* pParam)
+{
+    OnSteamControllerDisconnected.Broadcast((int32)pParam->m_ulDisconnectedDeviceHandle);
 }
