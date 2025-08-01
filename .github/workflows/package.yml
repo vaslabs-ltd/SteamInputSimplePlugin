@@ -25,9 +25,9 @@ jobs:
           name: SteamInputPlugin
           path: target/fab/SteamInputPlugin.zip
 
-    - run: echo "RELEASE_TAG=$(git tag)" >>$GITHUB_ENV
-    - uses: ncipollo/release-action@v1
-    with:
-        tag: ${{ env.RELEASE_TAG }}
-        artifacts: target/fab/SteamInputPlugin.zip
-        bodyFile: "README.md"
+      - name: Create GitHub Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ github.ref_name }}
+          artifacts: target/fab/SteamInputPlugin.zip
+          bodyFile: "README.md"
