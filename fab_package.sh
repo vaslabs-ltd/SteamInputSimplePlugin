@@ -1,16 +1,18 @@
-cd Plugins
-directories_to_keep="SteamInputSimplePlugin/Config/\
- SteamInputSimplePlugin/Content\
- SteamInputSimplePlugin/Resources\
- SteamInputSimplePlugin/Source\
- SteamInputSimplePlugin/SteamInputSimplePlugin.uplugin"
+cd Plugins/SteamInputSimplePlugin
+directories_to_keep="Config/\
+ Content/\
+ Resources/\
+ Source/\
+ SteamInputSimplePlugin.uplugin"
+
+target_dir="../../target"
 
 zip -r -9 -X -q -o "SteamInputPlugin.zip" $directories_to_keep
 
-[ -d ../target ] && rm -r ../target
+[ -d $target_dir ] && rm -r $target_dir
 
-mkdir -p ../target/fab
+mkdir -p $target_dir/fab
 
-mv "SteamInputPlugin.zip" ../target/fab/SteamInputPlugin.zip
+mv "SteamInputPlugin.zip" $target_dir/fab/SteamInputPlugin.zip
 
 cd -
