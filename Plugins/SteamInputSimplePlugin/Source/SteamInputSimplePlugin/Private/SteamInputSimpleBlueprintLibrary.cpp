@@ -1,5 +1,5 @@
 
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright (c) 2025 Vaslabs LTD. All Rights Reserved.
 
 #include "SteamInputSimpleBlueprintLibrary.h"
 #include "SteamSharedModule.h"

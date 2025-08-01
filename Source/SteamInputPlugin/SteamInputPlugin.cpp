@@ -1,4 +1,4 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Copyright (c) 2025 Vaslabs LTD. All Rights Reserved.
 
 #include "SteamInputPlugin.h"
 #include "Modules/ModuleManager.h"
