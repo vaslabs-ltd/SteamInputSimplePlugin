@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+            lfs: true
 
       - name: Make fab_package.sh executable
         run: chmod +x fab_package.sh
