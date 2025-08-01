@@ -1,0 +1,33 @@
+name: Package and Release
+
+on:
+  push:
+    tags:
+      - '*'   # Run on any tag
+  workflow_dispatch:
+
+jobs:
+  build-and-package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Make fab_package.sh executable
+        run: chmod +x fab_package.sh
+
+      - name: Run packaging script
+        run: ./fab_package.sh
+
+      - name: Upload SteamInputPlugin.zip as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SteamInputPlugin
+          path: target/fab/SteamInputPlugin.zip
+
+    - run: echo "RELEASE_TAG=$(git tag)" >>$GITHUB_ENV
+    - uses: ncipollo/release-action@v1
+    with:
+        tag: ${{ env.RELEASE_TAG }}
+        artifacts: target/fab/SteamInputPlugin.zip
+        bodyFile: "README.md"

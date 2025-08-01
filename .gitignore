@@ -78,3 +78,5 @@ DerivedDataCache/*
 #env variables
 *.env
 *env.bat
+
+target/
