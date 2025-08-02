@@ -1,4 +1,4 @@
-// Copyright (c) 2025 Vaslabs LTD. All Rights Reserved.
+// Copyright Vaslabs LTD 2025 All Rights Reserved.
 
 #include "SteamInputPlugin.h"
 #include "Modules/ModuleManager.h"
