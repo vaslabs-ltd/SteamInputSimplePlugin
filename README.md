@@ -38,7 +38,7 @@ That's an ID of a test game called Spacewar
 <img width="838" height="460" alt="image" src="https://github.com/user-attachments/assets/bdb37c44-3351-435a-902c-393f7a8b74e5" />
 
 - Place the same steam_appid.txt as in the unreal enditor step, but this time in the START IN directory
-- Laungh the game, again Spacewar will show as being played on your steam account.
+- Launch the game, again Spacewar will show as being played on your steam account.
 
 ### Steamworks
 - Make sure your Steam Input section is configured properly
