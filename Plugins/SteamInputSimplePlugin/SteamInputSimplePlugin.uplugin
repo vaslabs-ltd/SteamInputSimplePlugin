@@ -2,7 +2,7 @@
 	"FileVersion": 3,
 	"Version": 1,
 	"VersionName": "0.1",
-	"EngineVersion": "5.6",
+	"EngineVersion": "5.6.1",
 	"FriendlyName": "SteamInputSimplePlugin",
 	"Description": "Steam Input simple blueprint bindings",
 	"Category": "Other",
