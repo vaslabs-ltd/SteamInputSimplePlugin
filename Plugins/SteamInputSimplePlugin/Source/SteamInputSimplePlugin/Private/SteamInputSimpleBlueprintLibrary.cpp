@@ -59,3 +59,69 @@ TArray<FSteamControllerInfo> USteamInputSimpleBlueprintLibrary::GetConnectedCont
     }
     return Controllers;
 }
+
+void USteamInputSimpleBlueprintLibrary::RunSteamCallbacks()
+{
+    SteamAPI_RunCallbacks();
+}
+
+// Static storage for the overlay delegate
+static FOnSteamOverlayActivatedDelegate StoredOverlayDelegate;
+
+// Custom callback handler class for Steam overlay activation
+class COverlayActivatedCallbackHandler : public CCallbackImpl<sizeof(GameOverlayActivated_t)>
+{
+public:
+    COverlayActivatedCallbackHandler()
+    {
+        m_iCallback = GameOverlayActivated_t::k_iCallback;
+        SteamAPI_RegisterCallback(this, GameOverlayActivated_t::k_iCallback);
+    }
+    
+    ~COverlayActivatedCallbackHandler()
+    {
+        SteamAPI_UnregisterCallback(this);
+    }
+
+private:
+    virtual void Run(void* pvParam) override
+    {
+        GameOverlayActivated_t* pParam = (GameOverlayActivated_t*)pvParam;
+        if (StoredOverlayDelegate.IsBound())
+        {
+            StoredOverlayDelegate.ExecuteIfBound(pParam->m_bActive != 0);
+        }
+    }
+};
+
+void USteamInputSimpleBlueprintLibrary::OnSteamOverlayStateChanged(const FOnSteamOverlayActivatedDelegate OnOverlayActivatedDelegate)
+{
+    // Store the delegate for the callback
+    StoredOverlayDelegate = OnOverlayActivatedDelegate;
+    
+    if (FSteamSharedModule::IsAvailable())
+    {
+        TSharedPtr<FSteamClientInstanceHandler> SteamClientHandler = 
+            FSteamSharedModule::Get().ObtainSteamClientInstanceHandle();
+        if (SteamClientHandler.IsValid() && SteamClientHandler->IsInitialized())
+        {
+            ISteamUtils* SteamUtilsAPI = SteamUtils();
+
+            if (SteamUtilsAPI)
+            {
+                // Create static callback handler that will remain alive
+                static COverlayActivatedCallbackHandler* OverlayCallbackHandler = nullptr;
+                if (!OverlayCallbackHandler)
+                {
+                    OverlayCallbackHandler = new COverlayActivatedCallbackHandler();
+                }
+            }
+        } else {
+            // Print out an error message if Steam Utils API is not available
+            UE_LOG(LogSteamInputSimplePlugin, Warning, TEXT("Steam Utils API is not available or Steam Client is not initialized."));
+        }
+    } else {
+        // Print out an error message if Steam Shared Module is not available
+        UE_LOG(LogSteamInputSimplePlugin, Warning, TEXT("Steam Shared Module is not available."));
+    }
+}

@@ -23,6 +23,11 @@ enum class ESteamControllerType : uint8
 	SwitchPro UMETA(DisplayName = "Switch Pro Controller")
 };
 
+
+/* Delegate type to get notified on overlay events (activated/deactivated)*/
+UDELEGATE(BlueprintCallable)
+DECLARE_DYNAMIC_DELEGATE_OneParam(FOnSteamOverlayActivatedDelegate, bool, bActive);
+
 USTRUCT(BlueprintType)
 struct FSteamControllerInfo
 {
@@ -30,6 +35,7 @@ struct FSteamControllerInfo
 
 	UPROPERTY(BlueprintReadOnly, Category = "Simple Steam Input")
 	ESteamControllerType ControllerType;
+
 };
 
 UCLASS()
@@ -41,4 +47,12 @@ public:
 	/* Function to get connected Steam controllers */
 	UFUNCTION(BlueprintCallable, Category = "Simple Steam Input")
 	static TArray<FSteamControllerInfo> GetConnectedControllers();
+
+	/* Function to get notified via a delegate when steam overlay is activated or deactivated */
+	UFUNCTION(BlueprintCallable, Category = "Simple Steam Input")
+	static void OnSteamOverlayStateChanged(const FOnSteamOverlayActivatedDelegate OnOverlayActivatedDelegate);
+
+	/** Function to pump Steam callbacks - call this regularly to process Steam events */
+	UFUNCTION(BlueprintCallable, Category = "Simple Steam Input")
+	static void RunSteamCallbacks();
 };
