@@ -8,6 +8,7 @@ public class SteamInputPluginEditorTarget : TargetRules
 	public SteamInputPluginEditorTarget( TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
+		BuildEnvironment = TargetBuildEnvironment.Unique;
 		DefaultBuildSettings = BuildSettingsVersion.V5;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_6;
 		ExtraModuleNames.Add("SteamInputPlugin");
