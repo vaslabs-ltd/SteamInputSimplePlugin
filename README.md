@@ -19,25 +19,26 @@ call for Unreal Engine.
 
 <img width="332" height="139" alt="image" src="https://github.com/user-attachments/assets/189ad1c3-6f17-4288-9558-b175d4ef22b6" />
 
-- Place a steam_appid.txt file in the start in workspace
+- Place a `steam_appid.txt` file (exactly that name: not `steam_app_id.txt`) in the START IN directory
 - if you are not sure the current working directory is working properly, when you open unreal, open the python repl and do
 ```python
 import os
 os.getcwd()
 ```
-- The contents of steam_app_id.txt should be
+- The contents of `steam_appid.txt` should be
 ```
 480
 ```
 That's an ID of a test game called Spacewar
 - Start the Unreal Editor from steam, connect your blueprints and add some print string blocks to verify the controllers are connected properly.
-- When unreal exits, the steam_appid.txt will vanish, so either change the working directory or be careful to recreate it everytime you terminate Unreal Editor.
+- When unreal exits, the `steam_appid.txt` will vanish, so either change the working directory or be careful to recreate it everytime you terminate Unreal Editor.
 
 ### Game build
 - Similar to the unreal editor, add a custom build on steam like so
 <img width="838" height="460" alt="image" src="https://github.com/user-attachments/assets/bdb37c44-3351-435a-902c-393f7a8b74e5" />
 
-- Place the same steam_appid.txt as in the unreal enditor step, but this time in the START IN directory
+- Place the same `steam_appid.txt` as in the Unreal Editor step, in the START IN directory of the shortcut (e.g. the packaged
+  build's root folder, next to `<Game>.sh`). Use a Development build if you want logs: Shipping builds write none.
 - Launch the game, again Spacewar will show as being played on your steam account.
 
 ### Steamworks

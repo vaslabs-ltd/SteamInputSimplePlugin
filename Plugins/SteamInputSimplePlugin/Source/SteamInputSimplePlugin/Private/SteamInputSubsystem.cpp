@@ -5,6 +5,37 @@
 #include "SteamSharedModule.h"
 #include "Engine/Engine.h"
 
+#if PLATFORM_LINUX
+#include <stdlib.h>
+
+namespace SteamInputSimple
+{
+	/**
+	 * Steam Input only feeds a game's controller config while Steam sees the game window focused, and Steam tracks
+	 * focus through X11. Under a Wayland session SDL3 opens a native Wayland window, Steam never activates the game's
+	 * config and every pad goes dead (Proton is fine: Wine always uses X11). So, when Steam launched us, ask SDL for
+	 * X11 (XWayland). This runs at program start, before the engine initialises SDL, in monolithic (packaged) builds;
+	 * in the modular editor the module loads too late and it does nothing. An explicit SDL_VIDEODRIVER /
+	 * SDL_VIDEO_DRIVER always wins.
+	 */
+	struct FPreferX11UnderSteam
+	{
+		bool bApplied = false;
+
+		FPreferX11UnderSteam()
+		{
+			const bool bLaunchedBySteam = getenv("SteamEnv") || getenv("SteamGameId") || getenv("SteamAppId");
+			const bool bDriverChosen = getenv("SDL_VIDEODRIVER") || getenv("SDL_VIDEO_DRIVER");
+			if (bLaunchedBySteam && !bDriverChosen && getenv("DISPLAY") && getenv("WAYLAND_DISPLAY"))
+			{
+				bApplied = setenv("SDL_VIDEO_DRIVER", "x11", 0) == 0;
+			}
+		}
+	};
+	static FPreferX11UnderSteam GPreferX11UnderSteam;
+}
+#endif
+
 THIRD_PARTY_INCLUDES_START
 #include "steam/isteamdualsense.h"
 #include "steam/isteamutils.h"
@@ -62,6 +93,12 @@ USteamInputSubsystem* USteamInputSubsystem::Get()
 void USteamInputSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
+#if PLATFORM_LINUX
+	if (SteamInputSimple::GPreferX11UnderSteam.bApplied)
+	{
+		UE_LOG(LogSteamInputSimplePlugin, Log, TEXT("Launched by Steam under Wayland: asked SDL for X11 so Steam Input can see the game window focused."));
+	}
+#endif
 
 	if (IsRunningCommandlet() || IsRunningDedicatedServer() || !FSteamSharedModule::IsAvailable())
 	{

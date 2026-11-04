@@ -5,7 +5,7 @@ of Rich Text Style Row into the plugin's Content folder.
 
     python3 make_glyph_style_csv.py [--size 69] [--out DT_SteamInputGlyphs.csv]
 
-The font assets it points at live in the plugin's Content/Fonts: F_KenneyInput<Family>.
+The font assets it points at: /SteamInputSimplePlugin/Content/UI/Fonts/F_KenneyInput<Family>.
 """
 import argparse, csv, re
 
@@ -31,7 +31,7 @@ FAMILIES = {
 
 def style(font, size, color):
     s = TEMPLATE
-    s = re.sub(r"FontObject=\"[^\"]*\"", "FontObject=\"/Script/Engine.Font'/SteamInputSimplePlugin/Fonts/%s.%s'\"" % (font, font), s, count=1)
+    s = re.sub(r"FontObject=\"[^\"]*\"", "FontObject=\"/Script/Engine.Font'/SteamInputSimplePlugin/Content/UI/Fonts/%s.%s'\"" % (font, font), s, count=1)
     s = re.sub(r'TypefaceFontName="[^"]*"', 'TypefaceFontName="Default"', s, count=1)
     s = re.sub(r",Size=[\d.]+,LetterSpacing", ",Size=%f,LetterSpacing" % size, s, count=1)
     s = re.sub(r"ColorAndOpacity=\(SpecifiedColor=\(R=[\d.]+,G=[\d.]+,B=[\d.]+,A=[\d.]+\)",
