@@ -11,7 +11,7 @@ public class SteamInputSimplePlugin : ModuleRules
 		PublicIncludePaths.AddRange(
 			new string[] {
 				// ... add public include paths required here ...
-				System.IO.Path.Combine(EngineDirectory, "Plugins/Runtime/Steam/SteamShared/Source/SteamShared/Public")
+				
 			}
 			);
 				
@@ -30,6 +30,8 @@ public class SteamInputSimplePlugin : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"Projects",
+				"DeveloperSettings",
+				"ApplicationCore",
 				"SteamShared"
 				// ... add other public dependencies that you statically link with here ...
 			}

@@ -1,8 +1,9 @@
 // Copyright Vaslabs LTD 2025 All Rights Reserved.
 
 #include "SteamInputSimplePlugin.h"
+#include "SteamInputSimpleInternal.h"
 
-#define LOCTEXT_NAMESPACE "FSteamInputSimplePluginModule"
+DEFINE_LOG_CATEGORY(LogSteamInputSimplePlugin);
 
 void FSteamInputSimplePluginModule::StartupModule()
 {}
@@ -10,6 +11,4 @@ void FSteamInputSimplePluginModule::StartupModule()
 void FSteamInputSimplePluginModule::ShutdownModule()
 {}
 
-#undef LOCTEXT_NAMESPACE
-	
 IMPLEMENT_MODULE(FSteamInputSimplePluginModule, SteamInputSimplePlugin)
