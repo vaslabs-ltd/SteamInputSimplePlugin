@@ -2,6 +2,7 @@
 
 #include "SteamInputPromptSettings.h"
 #include "SteamInputPromptSubsystem.h"
+#include "SteamInputPromptTextBlock.h"
 #include "Misc/AutomationTest.h"
 
 #if WITH_DEV_AUTOMATION_TESTS
@@ -66,6 +67,24 @@ bool FSteamInputPromptEdgeCasesTest::RunTest(const FString& Parameters)
 	// Steam Controller has no right stick click: Xbox's glyph and row.
 	TestEqual(TEXT("Fallback to Xbox"), USteamInputPromptSubsystem::FormatPrompt(FText::FromString(TEXT("{R3}")), ESteamInputGlyphFamily::SteamController).ToString(),
 		Markup(ESteamInputGlyphFamily::Xbox, ESteamInputPromptButton::R3));
+	return true;
+}
+
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FSteamInputPromptTextBlockTest, "SteamInputSimplePlugin.Prompts.TextBlock", SteamInputPromptTests::Flags)
+
+bool FSteamInputPromptTextBlockTest::RunTest(const FString& Parameters)
+{
+	// No world or game instance: falls back to Xbox glyphs.
+	USteamInputPromptTextBlock* Block = NewObject<USteamInputPromptTextBlock>();
+	const FText Template = FText::FromString(TEXT("Press {A} to Join"));
+	Block->SetPromptTemplate(Template);
+	TestEqual(TEXT("Formatted from the template"), Block->GetText().ToString(),
+		USteamInputPromptSubsystem::FormatPrompt(Template, ESteamInputGlyphFamily::Xbox).ToString());
+
+	Block->SetPromptTemplate(FText::GetEmpty());
+	Block->SetText(FText::FromString(TEXT("Plain")));
+	Block->RefreshPrompt();
+	TestEqual(TEXT("Empty template leaves Text alone"), Block->GetText().ToString(), FString(TEXT("Plain")));
 	return true;
 }
 

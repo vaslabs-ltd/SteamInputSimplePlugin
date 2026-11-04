@@ -31,6 +31,9 @@ public class SteamInputSimplePlugin : ModuleRules
 				"Engine",
 				"Projects",
 				"DeveloperSettings",
+				"UMG",
+				"Slate",
+				"SlateCore",
 				"ApplicationCore",
 				"SteamShared"
 				// ... add other public dependencies that you statically link with here ...
