@@ -14,7 +14,7 @@ namespace
 	};
 
 	//                                  A       B       X       Y       LB      RB      LT      RT      Start   Back    DPadLR  DPadUD  DPad    Up      Down    Left    Right   LS      RS      L3      R3
-	const FFamilyCodepoints Defaults[] = {
+	const FFamilyCodepoints KenneyGlyphDefaults[] = {
 		{ ESteamInputGlyphFamily::Xbox,            { 0xE004, 0xE006, 0xE01E, 0xE020, 0xE043, 0xE049, 0xE047, 0xE04D, 0xE014, 0xE01C, 0xE026, 0xE037, 0xE022, 0xE035, 0xE024, 0xE028, 0xE02B, 0xE04F, 0xE057, 0xE053, 0xE05B } },
 		// PS4 Options / Share for Start / Back (PS5: 0xE024 / 0xE01E).
 		{ ESteamInputGlyphFamily::PlayStation,     { 0xE04B, 0xE041, 0xE051, 0xE053, 0xE078, 0xE080, 0xE07C, 0xE084, 0xE009, 0xE00B, 0xE059, 0xE062, 0xE055, 0xE060, 0xE057, 0xE05B, 0xE05E, 0xE064, 0xE06C, 0xE04D, 0xE04F } },
@@ -24,12 +24,12 @@ namespace
 		// The d-pad is the left trackpad and RS the right trackpad; no right stick click (falls back to Xbox).
 		{ ESteamInputGlyphFamily::SteamController, { 0xE022, 0xE024, 0xE036, 0xE038, 0xE049, 0xE055, 0xE04D, 0xE059, 0xE034, 0xE026, 0xE03E, 0xE047, 0xE03A, 0xE045, 0xE03C, 0xE040, 0xE043, 0xE05B, 0xE04F, 0xE05E, 0 } },
 	};
-	static_assert(UE_ARRAY_COUNT(Defaults[0].Codepoints) == static_cast<int32>(EButton::R3) + 1, "One codepoint per ESteamInputPromptButton");
+	static_assert(UE_ARRAY_COUNT(KenneyGlyphDefaults[0].Codepoints) == static_cast<int32>(EButton::R3) + 1, "One codepoint per ESteamInputPromptButton");
 }
 
 USteamInputPromptSettings::USteamInputPromptSettings()
 {
-	for (const FFamilyCodepoints& Family : Defaults)
+	for (const FFamilyCodepoints& Family : KenneyGlyphDefaults)
 	{
 		FSteamInputGlyphSet& Set = Families.Add(Family.Family);
 		for (int32 Index = 0; Index < UE_ARRAY_COUNT(Family.Codepoints); ++Index)

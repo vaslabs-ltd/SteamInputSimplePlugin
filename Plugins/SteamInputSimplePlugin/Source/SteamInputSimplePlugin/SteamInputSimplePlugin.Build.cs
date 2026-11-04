@@ -7,6 +7,9 @@ public class SteamInputSimplePlugin : ModuleRules
 	public SteamInputSimplePlugin(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+		// MSVC rejects names that shadow members or globals (C4456/C4458/C4459); make every compiler do the same so
+		// Linux builds catch it before Windows does.
+		CppCompileWarningSettings.ShadowVariableWarningLevel = WarningLevel.Error;
 		
 		PublicIncludePaths.AddRange(
 			new string[] {
