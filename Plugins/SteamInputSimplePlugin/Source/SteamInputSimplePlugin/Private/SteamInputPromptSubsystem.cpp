@@ -25,6 +25,8 @@ namespace
 		case ESteamControllerType::SwitchPro:
 		case ESteamControllerType::SwitchJoyCon:
 			return ESteamInputGlyphFamily::Switch;
+		case ESteamControllerType::SwitchJoyConSingle:
+			return ESteamInputGlyphFamily::SwitchJoyCon;
 		case ESteamControllerType::SteamDeck:
 			return ESteamInputGlyphFamily::SteamDeck;
 		case ESteamControllerType::SteamController:

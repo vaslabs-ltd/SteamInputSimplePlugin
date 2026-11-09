@@ -24,13 +24,14 @@ public:
 
 	static const USteamInputPromptSettings& Get() { return *GetDefault<USteamInputPromptSettings>(); }
 
-	/** The glyph for Button, falling back to Xbox's when Family has none (e.g. Steam Controller R3). */
+	/** The glyph for Button, falling back to Xbox's when Family has none (e.g. Steam Controller R3); a single Joy-Con
+	 * tries Switch's first. */
 	const FSteamInputPromptGlyph* FindGlyph(ESteamInputGlyphFamily Family, ESteamInputPromptButton Button, ESteamInputGlyphFamily* OutFamily = nullptr) const;
 
 	/** The style row for a glyph: its own Style, or "<Style Row Prefix>.<Family>.<Button>". */
 	FName GetStyleRow(ESteamInputGlyphFamily Family, ESteamInputPromptButton Button, const FSteamInputPromptGlyph& Glyph) const;
 
-	/** "Xbox", "PS", "Switch", "SteamDeck", "SteamController": the family part of style row names. */
+	/** "Xbox", "PS", "Switch", "SteamDeck", "SteamController", "SwitchJoyCon": the family part of style row names. */
 	static FString GetFamilyKey(ESteamInputGlyphFamily Family);
 
 	/** "A", "LB", "DPadLR", ...: the token is {<this>}. */

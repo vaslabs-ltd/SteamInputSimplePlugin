@@ -14,7 +14,9 @@ enum class ESteamInputGlyphFamily : uint8
 	PlayStation,
 	Switch,
 	SteamDeck,
-	SteamController
+	SteamController,
+	/** A single Joy-Con held sideways: its four face buttons by position, SL/SR as bumpers. */
+	SwitchJoyCon
 };
 
 /**

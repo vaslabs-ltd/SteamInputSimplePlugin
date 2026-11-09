@@ -23,6 +23,9 @@ namespace
 		{ ESteamInputGlyphFamily::SteamDeck,       { 0xE001, 0xE003, 0xE01D, 0xE01F, 0xE007, 0xE013, 0xE009, 0xE015, 0xE00F, 0xE01B, 0xE025, 0xE02E, 0xE021, 0xE02C, 0xE023, 0xE027, 0xE02A, 0xE030, 0xE038, 0xE034, 0xE03C } },
 		// The d-pad is the left trackpad and RS the right trackpad; no right stick click (falls back to Xbox).
 		{ ESteamInputGlyphFamily::SteamController, { 0xE022, 0xE024, 0xE036, 0xE038, 0xE049, 0xE055, 0xE04D, 0xE059, 0xE034, 0xE026, 0xE03E, 0xE047, 0xE03A, 0xE045, 0xE03C, 0xE040, 0xE043, 0xE05B, 0xE04F, 0xE05E, 0 } },
+		// Single Joy-Con held sideways (Switch font): face buttons by position (the "one dot lit" glyphs), SL / SR as
+		// bumpers, +/- for Start / Back, its one stick. Buttons it lacks fall back to Switch's glyphs.
+		{ ESteamInputGlyphFamily::SwitchJoyCon,    { 0xE022, 0xE029, 0xE026, 0xE02B, 0xE012, 0xE014, 0,      0,      0xE00E, 0xE00C, 0,      0,      0,      0,      0,      0,      0,      0xE05A, 0,      0xE05E, 0 } },
 	};
 	static_assert(UE_ARRAY_COUNT(KenneyGlyphDefaults[0].Codepoints) == static_cast<int32>(EButton::R3) + 1, "One codepoint per ESteamInputPromptButton");
 }
@@ -46,7 +49,9 @@ USteamInputPromptSettings::USteamInputPromptSettings()
 
 const FSteamInputPromptGlyph* USteamInputPromptSettings::FindGlyph(ESteamInputGlyphFamily Family, ESteamInputPromptButton Button, ESteamInputGlyphFamily* OutFamily) const
 {
-	for (ESteamInputGlyphFamily Candidate : { Family, ESteamInputGlyphFamily::Xbox })
+	// A single Joy-Con falls back to the Switch glyphs before Xbox's.
+	const ESteamInputGlyphFamily Parent = Family == ESteamInputGlyphFamily::SwitchJoyCon ? ESteamInputGlyphFamily::Switch : ESteamInputGlyphFamily::Xbox;
+	for (ESteamInputGlyphFamily Candidate : { Family, Parent, ESteamInputGlyphFamily::Xbox })
 	{
 		const FSteamInputGlyphSet* Set = Families.Find(Candidate);
 		if (const FSteamInputPromptGlyph* Glyph = Set ? Set->Glyphs.Find(Button) : nullptr)
@@ -78,6 +83,7 @@ FString USteamInputPromptSettings::GetFamilyKey(ESteamInputGlyphFamily Family)
 	case ESteamInputGlyphFamily::Switch: return TEXT("Switch");
 	case ESteamInputGlyphFamily::SteamDeck: return TEXT("SteamDeck");
 	case ESteamInputGlyphFamily::SteamController: return TEXT("SteamController");
+	case ESteamInputGlyphFamily::SwitchJoyCon: return TEXT("SwitchJoyCon");
 	default: return TEXT("Xbox");
 	}
 }

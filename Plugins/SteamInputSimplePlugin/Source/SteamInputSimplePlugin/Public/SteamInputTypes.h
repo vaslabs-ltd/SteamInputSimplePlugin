@@ -19,8 +19,11 @@ enum class ESteamControllerType : uint8
 	SwitchPro UMETA(DisplayName = "Switch Pro Controller"),
 	PS3 UMETA(DisplayName = "PS3 Controller"),
 	SteamDeck UMETA(DisplayName = "Steam Deck"),
-	SwitchJoyCon UMETA(DisplayName = "Switch Joy-Con"),
-	MobileTouch UMETA(DisplayName = "Steam Link Touch Controller")
+	/** A pair of Joy-Cons used together (like a Pro Controller). */
+	SwitchJoyCon UMETA(DisplayName = "Switch Joy-Con Pair"),
+	MobileTouch UMETA(DisplayName = "Steam Link Touch Controller"),
+	/** One Joy-Con on its own, held sideways. */
+	SwitchJoyConSingle UMETA(DisplayName = "Switch Joy-Con (single)")
 };
 
 USTRUCT(BlueprintType)

@@ -28,7 +28,7 @@ bool FSteamInputPromptFormatTest::RunTest(const FString& Parameters)
 	using namespace SteamInputPromptTests;
 	const FText Template = FText::FromString(TEXT("Press {A} to go, {Start} to quit, {DPadLR} to pick"));
 	for (ESteamInputGlyphFamily Family : { ESteamInputGlyphFamily::Xbox, ESteamInputGlyphFamily::PlayStation, ESteamInputGlyphFamily::Switch,
-		ESteamInputGlyphFamily::SteamDeck, ESteamInputGlyphFamily::SteamController })
+		ESteamInputGlyphFamily::SteamDeck, ESteamInputGlyphFamily::SteamController, ESteamInputGlyphFamily::SwitchJoyCon })
 	{
 		const FString Expected = FString::Printf(TEXT("Press %s to go, %s to quit, %s to pick"), *Markup(Family, ESteamInputPromptButton::A),
 			*Markup(Family, ESteamInputPromptButton::Start), *Markup(Family, ESteamInputPromptButton::DPadLR));
@@ -63,6 +63,11 @@ bool FSteamInputPromptEdgeCasesTest::RunTest(const FString& Parameters)
 	// Positional Switch mapping: the bottom button ({A}) is labelled B.
 	TestEqual(TEXT("Switch by position"), USteamInputPromptSubsystem::FormatPrompt(FText::FromString(TEXT("{A}{Y}")), ESteamInputGlyphFamily::Switch, true).ToString(),
 		Markup(ESteamInputGlyphFamily::Switch, ESteamInputPromptButton::B) + Markup(ESteamInputGlyphFamily::Switch, ESteamInputPromptButton::X));
+
+	// Single Joy-Con: face buttons by position, never swapped; what it lacks (triggers) comes from the Switch rows.
+	TestTrue(TEXT("Joy-Con A"), Markup(ESteamInputGlyphFamily::SwitchJoyCon, ESteamInputPromptButton::A).StartsWith(TEXT("<Glyph.SwitchJoyCon.A>")));
+	TestEqual(TEXT("Joy-Con LT from Switch"), USteamInputPromptSubsystem::FormatPrompt(FText::FromString(TEXT("{LT}")), ESteamInputGlyphFamily::SwitchJoyCon).ToString(),
+		Markup(ESteamInputGlyphFamily::Switch, ESteamInputPromptButton::LT));
 
 	// Steam Controller has no right stick click: Xbox's glyph and row.
 	TestEqual(TEXT("Fallback to Xbox"), USteamInputPromptSubsystem::FormatPrompt(FText::FromString(TEXT("{R3}")), ESteamInputGlyphFamily::SteamController).ToString(),

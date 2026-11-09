@@ -26,8 +26,8 @@ namespace SteamInputSimple
 		case k_ESteamInputType_PS5Controller: return ESteamControllerType::PS5;
 		case k_ESteamInputType_PS3Controller: return ESteamControllerType::PS3;
 		case k_ESteamInputType_SwitchProController: return ESteamControllerType::SwitchPro;
-		case k_ESteamInputType_SwitchJoyConPair:
-		case k_ESteamInputType_SwitchJoyConSingle: return ESteamControllerType::SwitchJoyCon;
+		case k_ESteamInputType_SwitchJoyConPair: return ESteamControllerType::SwitchJoyCon;
+		case k_ESteamInputType_SwitchJoyConSingle: return ESteamControllerType::SwitchJoyConSingle;
 		case k_ESteamInputType_SteamDeckController: return ESteamControllerType::SteamDeck;
 		case k_ESteamInputType_MobileTouch: return ESteamControllerType::MobileTouch;
 		default: return ESteamControllerType::Unknown;

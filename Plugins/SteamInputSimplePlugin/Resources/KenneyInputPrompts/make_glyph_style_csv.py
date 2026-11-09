@@ -26,6 +26,8 @@ FAMILIES = {
     "Switch": ("F_KenneyInputSwitch", BUTTONS, {}),
     "SteamDeck": ("F_KenneyInputSteamDeck", BUTTONS, {}),
     "SteamController": ("F_KenneyInputSteamController", [b for b in BUTTONS if b != "R3"], {}),
+    # Single Joy-Con held sideways; buttons it lacks use the Switch rows.
+    "SwitchJoyCon": ("F_KenneyInputSwitch", ["A", "B", "X", "Y", "LB", "RB", "Start", "Back", "LS", "L3"], {}),
 }
 
 
