@@ -267,12 +267,20 @@ void USteamInputSubsystem::SetLightbarColor(int32 GamepadIndex, FLinearColor Col
 	}
 }
 
-namespace
+namespace SteamInputSimple
 {
 	void FillTriggerCommand(const FSteamDualSenseTriggerEffect& Effect, ScePadTriggerEffectCommand& Out)
 	{
 		FMemory::Memzero(Out);
-		const uint8 Strength = static_cast<uint8>(FMath::Clamp(Effect.Strength, 0, 8));
+		auto Clamp8 = [](int32 V, int32 Min = 0) { return static_cast<uint8>(FMath::Clamp(V, Min, 8)); };
+		const uint8 Strength = Clamp8(Effect.Strength);
+		auto FillZones = [&Effect, &Clamp8](uint8* Zones)
+		{
+			for (int32 i = 0; i < SCE_PAD_TRIGGER_EFFECT_CONTROL_POINT_NUM; ++i)
+			{
+				Zones[i] = Effect.ZoneStrengths.IsValidIndex(i) ? Clamp8(Effect.ZoneStrengths[i]) : 0;
+			}
+		};
 		switch (Effect.Mode)
 		{
 		case ESteamDualSenseTriggerMode::Feedback:
@@ -295,6 +303,25 @@ namespace
 			Out.commandData.vibrationParam.amplitude = Strength;
 			Out.commandData.vibrationParam.frequency = static_cast<uint8>(FMath::Clamp(Effect.Frequency, 0, 255));
 			break;
+		case ESteamDualSenseTriggerMode::MultiplePositionFeedback:
+			Out.mode = SCE_PAD_TRIGGER_EFFECT_MODE_MULTIPLE_POSITION_FEEDBACK;
+			FillZones(Out.commandData.multiplePositionFeedbackParam.strength);
+			break;
+		case ESteamDualSenseTriggerMode::SlopeFeedback:
+		{
+			const int32 Start = FMath::Clamp(Effect.StartPosition, 0, 8);
+			Out.mode = SCE_PAD_TRIGGER_EFFECT_MODE_SLOPE_FEEDBACK;
+			Out.commandData.slopeFeedbackParam.startPosition = static_cast<uint8>(Start);
+			Out.commandData.slopeFeedbackParam.endPosition = static_cast<uint8>(FMath::Clamp(Effect.EndPosition, Start + 1, 9));
+			Out.commandData.slopeFeedbackParam.startStrength = Clamp8(Effect.Strength, 1);
+			Out.commandData.slopeFeedbackParam.endStrength = Clamp8(Effect.EndStrength, 1);
+			break;
+		}
+		case ESteamDualSenseTriggerMode::MultiplePositionVibration:
+			Out.mode = SCE_PAD_TRIGGER_EFFECT_MODE_MULTIPLE_POSITION_VIBRATION;
+			Out.commandData.multiplePositionVibrationParam.frequency = static_cast<uint8>(FMath::Clamp(Effect.Frequency, 0, 255));
+			FillZones(Out.commandData.multiplePositionVibrationParam.amplitude);
+			break;
 		case ESteamDualSenseTriggerMode::Off:
 		default:
 			Out.mode = SCE_PAD_TRIGGER_EFFECT_MODE_OFF;
@@ -303,17 +330,41 @@ namespace
 	}
 }
 
+bool USteamInputSubsystem::HasAdaptiveTriggers(int32 GamepadIndex) const
+{
+	return GetControllerTypeForGamepadIndex(GamepadIndex) == ESteamControllerType::PS5;
+}
+
 void USteamInputSubsystem::SetDualSenseTriggerEffect(int32 GamepadIndex, const FSteamDualSenseTriggerEffect& LeftTrigger, const FSteamDualSenseTriggerEffect& RightTrigger)
 {
+	SetDualSenseTriggerEffects(GamepadIndex, &LeftTrigger, &RightTrigger);
+}
+
+void USteamInputSubsystem::SetDualSenseTriggerEffectOn(int32 GamepadIndex, ESteamDualSenseTrigger Trigger, const FSteamDualSenseTriggerEffect& Effect)
+{
+	SetDualSenseTriggerEffects(GamepadIndex, Trigger != ESteamDualSenseTrigger::Right ? &Effect : nullptr,
+		Trigger != ESteamDualSenseTrigger::Left ? &Effect : nullptr);
+}
+
+void USteamInputSubsystem::SetDualSenseTriggerEffects(int32 GamepadIndex, const FSteamDualSenseTriggerEffect* LeftTrigger, const FSteamDualSenseTriggerEffect* RightTrigger)
+{
 	const uint64 Handle = HandleForGamepadIndex(GamepadIndex);
-	if (!Handle || SteamInput()->GetInputTypeForHandle(Handle) != k_ESteamInputType_PS5Controller)
+	if (!Handle || (!LeftTrigger && !RightTrigger) || SteamInput()->GetInputTypeForHandle(Handle) != k_ESteamInputType_PS5Controller)
 	{
 		return;
 	}
+	// Only the masked triggers change; the other one keeps whatever effect it had.
 	ScePadTriggerEffectParam Param;
 	FMemory::Memzero(Param);
-	Param.triggerMask = SCE_PAD_TRIGGER_EFFECT_TRIGGER_MASK_L2 | SCE_PAD_TRIGGER_EFFECT_TRIGGER_MASK_R2;
-	FillTriggerCommand(LeftTrigger, Param.command[SCE_PAD_TRIGGER_EFFECT_PARAM_INDEX_FOR_L2]);
-	FillTriggerCommand(RightTrigger, Param.command[SCE_PAD_TRIGGER_EFFECT_PARAM_INDEX_FOR_R2]);
+	if (LeftTrigger)
+	{
+		Param.triggerMask |= SCE_PAD_TRIGGER_EFFECT_TRIGGER_MASK_L2;
+		SteamInputSimple::FillTriggerCommand(*LeftTrigger, Param.command[SCE_PAD_TRIGGER_EFFECT_PARAM_INDEX_FOR_L2]);
+	}
+	if (RightTrigger)
+	{
+		Param.triggerMask |= SCE_PAD_TRIGGER_EFFECT_TRIGGER_MASK_R2;
+		SteamInputSimple::FillTriggerCommand(*RightTrigger, Param.command[SCE_PAD_TRIGGER_EFFECT_PARAM_INDEX_FOR_R2]);
+	}
 	SteamInput()->SetDualSenseTriggerEffect(Handle, &Param);
 }

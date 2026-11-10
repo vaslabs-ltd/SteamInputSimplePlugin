@@ -73,9 +73,23 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Simple Steam Input|Feedback")
 	void SetLightbarColor(int32 GamepadIndex, FLinearColor Color, bool bReset = false);
 
-	/** DualSense adaptive trigger effects. No-op for other controllers. */
+	/** True when the pad at GamepadIndex is a DualSense (the only pad with adaptive triggers). */
+	UFUNCTION(BlueprintPure, Category = "Simple Steam Input|Feedback")
+	bool HasAdaptiveTriggers(int32 GamepadIndex) const;
+
+	/**
+	 * DualSense adaptive trigger effects on both triggers. No-op for other controllers. The effect stays until replaced.
+	 * For per-player effects with durations and automatic resets, use the Steam Input Feedback functions instead.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Simple Steam Input|Feedback")
 	void SetDualSenseTriggerEffect(int32 GamepadIndex, const FSteamDualSenseTriggerEffect& LeftTrigger, const FSteamDualSenseTriggerEffect& RightTrigger);
+
+	/** Like SetDualSenseTriggerEffect, but only the chosen trigger(s) change; the other keeps its effect. */
+	UFUNCTION(BlueprintCallable, Category = "Simple Steam Input|Feedback")
+	void SetDualSenseTriggerEffectOn(int32 GamepadIndex, ESteamDualSenseTrigger Trigger, const FSteamDualSenseTriggerEffect& Effect);
+
+	/** C++: one call for both triggers; a null trigger keeps its current effect. */
+	void SetDualSenseTriggerEffects(int32 GamepadIndex, const FSteamDualSenseTriggerEffect* LeftTrigger, const FSteamDualSenseTriggerEffect* RightTrigger);
 
 	UPROPERTY(BlueprintAssignable, Category = "Simple Steam Input")
 	FOnSteamInputControllerConnected OnControllerConnected;

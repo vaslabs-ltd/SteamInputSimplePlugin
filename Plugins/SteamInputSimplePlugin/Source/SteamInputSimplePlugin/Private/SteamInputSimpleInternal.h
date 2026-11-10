@@ -8,6 +8,7 @@
 THIRD_PARTY_INCLUDES_START
 #include "steam/steam_api.h"
 #include "steam/isteaminput.h"
+#include "steam/isteamdualsense.h"
 THIRD_PARTY_INCLUDES_END
 
 DECLARE_LOG_CATEGORY_EXTERN(LogSteamInputSimplePlugin, Log, All);
@@ -33,4 +34,7 @@ namespace SteamInputSimple
 		default: return ESteamControllerType::Unknown;
 		}
 	}
+
+	/** Steam's command for one trigger, with every value clamped to the range its mode accepts. */
+	void FillTriggerCommand(const FSteamDualSenseTriggerEffect& Effect, ScePadTriggerEffectCommand& Out);
 }

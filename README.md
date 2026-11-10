@@ -11,6 +11,38 @@ call for Unreal Engine.
 ### Available controller types
 <img width="514" height="363" alt="Available controller types" src="https://github.com/user-attachments/assets/c7052753-a4ff-4f88-a7ce-d0ad861b31e7" />
 
+### DualSense adaptive triggers and lightbar colour (per player)
+Blueprint functions under **Steam Input > Feedback**. They take a Player Controller and do nothing for pads without adaptive
+triggers or a lightbar, keyboard players and games without Steam, so it's safe to call them for everyone.
+
+| Node | What it does |
+|---|---|
+| `Set Trigger Preset (Player, Trigger, Preset, Duration)` | `Off`, `Light`, `Heavy`, `Locked`, `Weapon` (a click part way), `Ramp` (builds up), `Vibration` |
+| `Set Trigger Effect (Player, Trigger, Effect, Duration)` | A custom effect: Feedback, Weapon, Vibration, Slope Feedback, Multiple Position Feedback/Vibration |
+| `Make Trigger Effect From Preset (Preset)` | A preset's values, as a starting point for a custom effect |
+| `Reset Trigger Effects (Player)` / `Reset All Trigger Effects` | Back to Off |
+| `Has Adaptive Triggers (Player)` | True when the player holds a DualSense |
+| `Set Lightbar Color (Player, Color, Duration)` | DualShock 4 / DualSense light colour |
+| `Reset Lightbar (Player)` / `Reset All Lightbars` | Back to the colour the player chose in Steam |
+| `Has Lightbar (Player)` | True for a DualShock 4 or DualSense |
+| `Get Steam Gamepad Index (Player)` | For the index-based Steam Input Subsystem calls (e.g. rumble) |
+
+- **Trigger:** `Left` (L2/LT), `Right` (R2/RT) or `Both`. Setting one trigger leaves the other alone.
+- **Duration 0** sets a lasting effect. **Duration > 0** sets a timed one, which then falls back to the lasting effect.
+  For example, `Heavy` on the right trigger while a weapon is equipped, then `Locked` for 1.5 s on each shot (a cooldown).
+- **Lightbar:** Duration 0 sets a lasting colour, which stays across levels. Duration > 0 is a flash (e.g. on a hit)
+  that returns to the lasting colour, or to the player's Steam colour if none was set.
+- `Locked` is the strongest resistance a DualSense can apply from the start of the pull. A determined player can still
+  push through it.
+- **Automatic resets:**
+  - Triggers are released while the game is paused or the Steam overlay is open, and restored afterwards. Turn this off
+    with `Release Triggers While Paused` on the Steam Input Feedback Subsystem.
+  - They're reset on level change and on exit.
+  - Trigger effects and colours are re-sent when a pad reconnects.
+  - Lightbars go back to each player's Steam colour on exit.
+- **C++:** `USteamInputFeedbackSubsystem` (game instance subsystem), keyed by gamepad index (the local player's
+  `ControllerId`).
+
 ## Testing
 
 ### Unreal Editor
