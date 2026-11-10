@@ -82,6 +82,11 @@ private:
 	void Send(int32 GamepadIndex, SteamInputSimple::FPadFeedback& Pad, bool bSuspended);
 	void RemoveIfIdle(int32 GamepadIndex);
 	void HandleControllersChanged();
+	/** Re-send everything now and again shortly after: Steam re-applies its own pad settings when it switches configs. */
+	void ScheduleResync();
+	void HandleDeviceConnectionChange(EInputDeviceConnectionState NewState, FPlatformUserId UserId, FInputDeviceId DeviceId);
+	void HandleOverlay(bool bActive);
+	void HandleAppActivation(bool bActive);
 	void HandleWorldCleanup(UWorld* World, bool bSessionEnded, bool bCleanupResources);
 
 	/** Gamepad index -> trigger state. TPimplPtr keeps the plain C++ state out of this header (and UHT's code). */
@@ -89,5 +94,10 @@ private:
 	FTSTicker::FDelegateHandle TickHandle;
 	FDelegateHandle ControllersChangedHandle;
 	FDelegateHandle WorldCleanupHandle;
+	FDelegateHandle DeviceConnectionHandle;
+	FDelegateHandle OverlayHandle;
+	FDelegateHandle ReactivatedHandle;
+	/** Seconds until each pending re-send. */
+	TArray<float> ResyncDelays;
 	bool bWasSuspended = false;
 };

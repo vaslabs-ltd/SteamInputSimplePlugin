@@ -55,6 +55,10 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Simple Steam Input")
 	int32 GetGamepadIndexForHandle(int64 Handle) const;
 
+	/** Steam's handle for the pad at an emulated gamepad index, 0 when there is none (yet) or Steam is not running. */
+	UFUNCTION(BlueprintPure, Category = "Simple Steam Input")
+	int64 GetHandleForGamepadIndex(int32 GamepadIndex) const { return static_cast<int64>(HandleForGamepadIndex(GamepadIndex)); }
+
 	/**
 	 * Switch pads: true when Steam maps the face buttons by label (Xbox A = the button labelled A), false when by
 	 * position (Xbox A = the bottom button, labelled B). True for other pads and without Steam.
