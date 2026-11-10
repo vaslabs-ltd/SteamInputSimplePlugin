@@ -93,8 +93,9 @@ triggers or a lightbar, keyboard players and games without Steam, so it's safe t
   - Steam re-applies its own pad settings when it switches configs (e.g. the game losing and regaining focus), so
     colours and trigger effects are re-sent then too: on focus, when the overlay closes, when UE's pads reconnect, and
     again 0.5 s and 2 s later.
-- **Lightbar testing:** with the Spacewar (480) + non-Steam shortcut setup below, Steam seems to drop the colour (it
-  activates the shortcut's config, not 480's), while triggers still work. Test the lightbar under the game's own app ID.
+- **Lightbar testing:** with the Spacewar (480) + non-Steam shortcut setup below, Steam drops the colour, while
+  trigger effects still work. Steam activates the shortcut's config, not 480's. Launch the game under its own app ID,
+  from your Steam library (e.g. a playtest or a beta branch), and the lightbar works (confirmed 2026-11-10).
 - **Debugging:** `SteamInput.SetLightbar <GamepadIndex> <R> <G> <B>` (or `... default`) in the console sends a colour
   straight to Steam. `LogSteamInputFeedback` logs every colour requested and sent.
 - **C++:** `USteamInputFeedbackSubsystem` (game instance subsystem), keyed by gamepad index (the local player's
