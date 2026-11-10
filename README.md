@@ -11,6 +11,56 @@ call for Unreal Engine.
 ### Available controller types
 <img width="514" height="363" alt="Available controller types" src="https://github.com/user-attachments/assets/c7052753-a4ff-4f88-a7ce-d0ad861b31e7" />
 
+### Controller glyphs (button prompts per player)
+Show each player the buttons of the pad they're actually holding. The family comes from Steam Input, matching the local
+player's `ControllerId` to Steam's gamepad index.
+
+- **Families:** Xbox, PlayStation, Switch (a Pro Controller or a Joy-Con pair), SwitchJoyCon (one Joy-Con held sideways),
+  SteamDeck and SteamController. Generic pads, and every pad when Steam isn't running, show as Xbox.
+- **Prompt tokens** use the Xbox names: `{A} {B} {X} {Y} {LB} {RB} {LT} {RT} {Start} {Back} {DPadLR} {DPadUD} {DPad}
+  {DPadUp} {DPadDown} {DPadLeft} {DPadRight} {LS} {RS} {L3} {R3}`. For example, `Press {A} to Join` shows a cross on a
+  PlayStation pad and a green A on an Xbox pad.
+- Each token becomes rich text, `<Glyph.<Family>.<Button>>char</>`, drawn with the matching glyph font.
+  - Family is `Xbox`, `PS`, `Switch`, `SwitchJoyCon`, `SteamDeck` or `SteamController`.
+  - A family without a glyph for a button falls back to Xbox's.
+
+**The easy way: the "Steam Input Prompt Text" widget** (UMG palette, under Steam Input)
+- It's a Rich Text Block with a **Prompt Template** field (e.g. `Press {A} to Join`). It formats the template with the
+  player's glyphs and redraws itself when controllers change, so no event wiring is needed.
+- Set **Text Style Set** to `/SteamInputSimplePlugin/Content/DT_SteamInputGlyphs`, or to a Composite Data Table that includes it
+  along with your own text styles.
+- **Player:** `Set Prompt Player` (per-player cards), otherwise the widget's owning player, otherwise the first local
+  player. Use `Set Prompt Template` to change the text at runtime.
+
+**Blueprint functions** (Steam Input > Prompts)
+
+| Node | What it does |
+|---|---|
+| `Format Controller Prompt (Template, Owning Player)` | The template with that player's glyphs (the first local player's when empty) |
+| `Format Controller Prompt For Family (Template, Family)` | The template with a given family's glyphs |
+| `Get Controller Family (Owning Player)` | Xbox, PlayStation, Switch, ... |
+| `Get Controller Texture (Xbox Texture, Owning Player)` | The family's version of an image with buttons drawn in |
+
+- **Event:** `On Controller Families Changed`, on the Steam Input Prompt Subsystem, fires shortly after a pad connects
+  or disconnects.
+- **C++:** `USteamInputPromptSubsystem::FormatPrompt(Template, Family)` / `FormatPromptFor(Template, OwnerPC)`. Apply it
+  **before** `FText::Format` with `{0}`-style arguments, because ordered formatting turns `{A}` into "0".
+- **Switch layout:** Switch glyphs follow Steam's per-player "Use Nintendo Button Layout" setting. `{A}` shows A when
+  Steam maps buttons by label, and B (the bottom button) when it maps by position. You can force either in the settings.
+- **Settings:** Project Settings > Plugins > Steam Input Prompts. You can change the glyph per family and button, with an
+  optional style row override, the row prefix and the Switch layout. **Images** maps an Xbox texture to its version per
+  family, for `Get Controller Texture`.
+- **Assets:**
+  - Glyph fonts: `/SteamInputSimplePlugin/Content/UI/Fonts/F_KenneyInput*` (one per family).
+  - Style table: `DT_SteamInputGlyphs`, imported from `Resources/KenneyInputPrompts/DT_SteamInputGlyphs.csv`.
+  - To regenerate the table (e.g. a different size), run `Resources/KenneyInputPrompts/make_glyph_style_csv.py [--size 69]`
+    and reimport the CSV.
+
+### Auto-pause
+The Steam Input Pause Subsystem has one event, `On Pause Requested (Reason, Player Index)`. It fires when a local player's
+controller disconnects (with that player's index), or when the Steam overlay opens (with -1). The game decides whether
+and how to pause.
+
 ### DualSense adaptive triggers and lightbar colour (per player)
 Blueprint functions under **Steam Input > Feedback**. They take a Player Controller and do nothing for pads without adaptive
 triggers or a lightbar, keyboard players and games without Steam, so it's safe to call them for everyone.
@@ -89,6 +139,12 @@ That's an ID of a test game called Spacewar
 
 <img width="849" height="607" alt="image" src="https://github.com/user-attachments/assets/580f2957-5242-4774-ac6a-44b8933ac896" />
 
+
+## Credits
+- Controller glyphs: [Input Prompts](https://kenney.nl/assets/input-prompts) by [Kenney](https://www.kenney.nl), licensed
+  [CC0](http://creativecommons.org/publicdomain/zero/1.0/). The fonts, their character maps and Kenney's licence are in
+  `Plugins/SteamInputSimplePlugin/Resources/KenneyInputPrompts`. Thank you, Kenney! If they're useful to you too,
+  consider [supporting Kenney](https://www.kenney.nl/donate).
 
 ## Future development
 
